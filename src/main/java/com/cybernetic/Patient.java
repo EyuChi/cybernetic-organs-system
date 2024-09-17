@@ -34,7 +34,7 @@ public class Patient
        } else {
            installedOrgans[organCount] = organ;
            organCount++;
-           System.out.println("Organ added successfully: " + organ);
+           System.out.println("Organ installed successfully: " + organ);
        }
     }
 
