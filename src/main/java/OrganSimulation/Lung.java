@@ -19,6 +19,12 @@ public class Lung
             return oxygen;
         }
 
+        public void changeLHealth(int amount)
+        {
+            newLHealth = amount + lHealth;
+            lHealth = Math.min(newLHealth, 100);
+        }
+
         //Oxygen Level Update
 
         public void update(int pumpRate)

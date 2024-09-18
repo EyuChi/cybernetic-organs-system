@@ -4,7 +4,6 @@ import java.util.Random;
 
 public class Brain
 {
-
         //(conEff) Stands for ControlEfficency
         private int conEff = 90;
         private int newConEff;
@@ -13,6 +12,7 @@ public class Brain
 
         private Random rand = new Random();
 
+        //getter methods
         public int getBHealth()
         {
             return bHealth;
@@ -22,6 +22,14 @@ public class Brain
         {
             return conEff;
         }
+
+        //manual way to change health for RNG
+        public void changeBHealth(int amount)
+        {
+            newBHealth = amount + bHealth;
+            bHealth = Math.min(newBHealth, 100); //To prevent overheal
+        }
+
 
         public void update(int oxygen)
         {
