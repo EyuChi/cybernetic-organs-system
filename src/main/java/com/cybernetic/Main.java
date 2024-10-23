@@ -1,73 +1,72 @@
 package com.cybernetic;
 
 public class Main {
+    public static void main(String[] args) {
+        // Create a waiting list
+        WaitingList waitingList = new WaitingList();
 
+        // Create some patients
+        Patient johnDoe = new Patient("P001", "John Doe", "A+", 70, "HLA-A");
+        Patient janeSmith = new Patient("P002", "Jane Smith", "B-", 65, "HLA-B");
+        Patient bobJohnson = new Patient("P003", "Bob Johnson", "O+", 80, "HLA-A");
+        Patient aliceBrown = new Patient("P004", "Alice Brown", "AB-", 55, "HLA-C");
 
-        public static void main(String[] args) {
+        // Add patients to the waiting list
+        System.out.println("Adding patients to the waiting list...");
+        waitingList.addPatient(johnDoe, 5);
+        waitingList.addPatient(janeSmith, 3);
+        waitingList.addPatient(bobJohnson, 4);
 
-            // Create a waiting list
-            WaitingList waitingList = new WaitingList();
+        // Display initial waiting list
+        System.out.println("\nInitial Waiting List:");
+        waitingList.displayWaitingList();
 
-            // Create some patients
-            Patient johnDoe = new Patient("P001", "John Doe", "A+", 70, "HLA-A");
-            Patient janeSmith = new Patient("P002", "Jane Smith", "B-", 65, "HLA-B");
-            Patient bobJohnson = new Patient("P003", "Bob Johnson", "O+", 80, "HLA-A");
-            Patient aliceBrown = new Patient("P004", "Alice Brown", "AB-", 55, "HLA-C");
+        // Add a new patient
+        System.out.println("\nAdding new patient: Alice Brown (Priority: 6)");
+        waitingList.addPatient(aliceBrown, 6);
 
-            // Add patients to the waiting list
-            System.out.println("Adding patients to the waiting list...");
-            waitingList.addPatient(johnDoe, 5);
-            waitingList.addPatient(janeSmith, 3);
-            waitingList.addPatient(bobJohnson, 4);
+        // Display updated waiting list
+        System.out.println("Updated Waiting List:");
+        waitingList.displayWaitingList();
 
-            // Display initial waiting list (Requirement 2.4)
-            System.out.println("\nInitial Waiting List:");
-            waitingList.displayWaitingList();
+        // Remove highest priority patient
+        Patient removedPatient = waitingList.removeHighestPriority();
+        System.out.println("\nRemoving highest priority patient: " + removedPatient.getName());
 
-            // Add a new patient (Requirement 2.1)
-            System.out.println("\nAdding new patient: Alice Brown (Priority: 6)");
-            waitingList.addPatient(aliceBrown, 6);
+        // Update priority for a patient
+        System.out.println("\nUpdating priority for Bob Johnson to 7");
+        waitingList.updatePriority("P003", 7);
 
-            // Display updated waiting list (Requirement 2.4)
-            System.out.println("Updated Waiting List:");
-            waitingList.displayWaitingList();
+        // Display updated waiting list
+        System.out.println("Updated Waiting List:");
+        waitingList.displayWaitingList();
 
-            // Remove highest priority patient  (Requirement 2.2)
-            Patient removedPatient = waitingList.removeHighestPriority();
-            System.out.println("\nRemoving highest priority patient: " + removedPatient.getName());
+        /*Create an organ (Im gonna assume that there might have been a typo when it came to the weight.
+            (Changed the weight from 350 to 70) */
+        Organ cyberHeart = new Organ("O001", "CyberHeart-X1", "A+", 70, "HLA-A");
 
-            // Update priority for a patient (Requirement 2.3)
-            System.out.println("\nUpdating priority for Bob Johnson to 7");
-            waitingList.updatePriority("P003", 7);
+        // Create an OrganCompatibilityAnalyzer
+        OrganCompatiabilityAnalyzer analyzer = new OrganCompatiabilityAnalyzer();
 
-            // Display updated waiting list (Requirement 2.4)
-            System.out.println("Updated Waiting List:");
-            waitingList.displayWaitingList();
-
-            // Create an organ
-            Organ cyberHeart = new Organ("O001", "CyberHeart-X1", "A+", 350, "HLA-A");
-
-            // Create an OrganCompatibilityAnalyzer
-            OrganCompatiabilityAnalyzer analyzer = new OrganCompatiabilityAnalyzer();
-            // Match organ to waiting list
-            System.out.println("\nMatching "+cyberHeart.getName()+" to Waiting List:");
-            Patient matchedPatient = analyzer.findCompatiblePatient(cyberHeart, waitingList);
-            if (matchedPatient != null) {
-                int priority = waitingList.getPosition(matchedPatient.getId());
-                System.out.println("Compatible patient found: " + matchedPatient.getName() +
-                        " (Priority: " + priority + ")");
-            } else {
-                System.out.println("No compatible patient found in the waiting list.");
-            }
-
-            /*THERE WAS A SINGLE '}' RIGHT HERE AND IT WASTED ME MINUTES
-            TRYING TO FIGURE OUT WHY IT DIDN'T RECOGNIZE METHODS FROM WAITINGLIST
-            I LOVE BUG FIXING*/
-
-    //after matchingPatient is found, remove the patient from the waiting list (Requirement 2.4 & 2.6)
+        // Match organ to waiting list
+        System.out.println("\nMatching "+cyberHeart.getName()+" to Waiting List:");
+        Patient matchedPatient = analyzer.findCompatiblePatient(cyberHeart, waitingList);
+        if (matchedPatient != null) {
+            int priority = waitingList.getPosition(matchedPatient.getId());
+            System.out.println("Compatible patient found: " + matchedPatient.getName() +
+                    " (Priority: " + priority + ")");
+            //Orignally where line 67-68 was.
+        //after matchingPatient is found, remove the patient from the waiting list
         System.out.println("\nRemoving matched patient from the waiting list...");
         waitingList.removePatient(matchedPatient.getId());
         System.out.println("Updated Waiting List:");
         waitingList.displayWaitingList();
-}
+        /*Had to use GPT, to figure out why it wasn't functioning correctly but when I forked
+        the main directly it would give me an error and thus the giant block of cap text in previous push.
+        By moving this statement below, it wouldn't cause a NullPointException
+         */
+        } else {
+            System.out.println("No compatible patient found in the waiting list.");
+        }
+    }
 }

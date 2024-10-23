@@ -23,7 +23,15 @@ public class OrganCompatiabilityAnalyzer {
         int bloodTypeScore = calculateBloodTypeCompatibility(organ.getBloodType(), patient.getBloodType());
         int weightScore = calculateWeightCompatibility(organ.getWeight(), patient.getWeight());
         int hlaScore = calculateHlaCompatibility(organ.getHlaType(), patient.getHlaType());
+        //debug
+        System.out.println("Checking compatibility for patient: " + patient.getName());
+        System.out.println("Blood Type Score: " + bloodTypeScore);
+        System.out.println("Weight Score: " + weightScore);
+        System.out.println("HLA Score: " + hlaScore);
+
         return bloodTypeScore > 0 && weightScore > 0 && hlaScore > 0;
+
+
     }
 
 
@@ -55,7 +63,7 @@ public class OrganCompatiabilityAnalyzer {
         } else if (weightDifference <= patientWeight * 0.2) {
             return 1; // Moderate match (within 20%)
         } else {
-            return (int) 0; // Poor match (greater than 20%)
+            return 0; // Poor match (greater than 20%)
         }
     }
 

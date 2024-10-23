@@ -47,9 +47,9 @@ public class WaitingList {
 
     //(Requirement 2.3) Update the Priority of an exisiting patient (needs: 2.6)
     void updatePriority(String patientId, int newPriority) {
-    removePatient(patientId);
     Patient patient = findPatientById(patientId);
     if (patient != null) {
+        removePatient(patientId);
         addPatient(patient, newPriority);
     }
 }
@@ -92,12 +92,23 @@ public void displayWaitingList() {
 
 //(Requirement 2.6) REmove patients
     public void removePatient(String patientId) {
-    if (head == null) return; //return empty lsit
+    if (head == null) return; // Handle empty list
 
-        if(head.getPatient().getId().equals(patientId)) {
-            head = head.getNext();
+    // If the head needs to be removed
+    if (head.getPatient().getId().equals(patientId)) {
+        head = head.getNext();
+        return;
+    }
+
+    // Traverse the list to find the patient
+    waitingListNode current = head;
+    while (current.getNext() != null) {
+        if (current.getNext().getPatient().getId().equals(patientId)) {
+            current.setNext(current.getNext().getNext()); // Remove the patient
             return;
         }
+        current = current.getNext();
     }
+}
 
 }
