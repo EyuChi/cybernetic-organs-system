@@ -1,67 +1,44 @@
 package com.cybernetic;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 public class OrganCompatiabilityAnalyzer {
-    private List<Organ> organs; //New Organ & Patient List
-    private List<Patient> patients;
 
-    public OrganCompatiabilityAnalyzer() {
-        organs = new ArrayList<>();
-        patients = new ArrayList<>();
-    }
-
-    public void addOrgan(Organ organ) {
-        organs.add(organ);
-    }
-
-    public void addPatient(Patient patient) {
-        patients.add(patient);
-    }
-
-
-    public List<Organ> getCompatibleOrgans(Patient patient) {
-        return organs.stream()//Reorganize the organ list by first
-                .filter(organ -> isCompatible(organ, patient))  // Filtering out uncompatible organs
-                .collect(Collectors.toList()); //Return all compatible organs to a readable list
+    //Start of week 8
+    //(Requirement 3.1) DONEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+    public Patient findCompatiblePatient(Organ organ, WaitingList waitingList) {
+        waitingListNode current = waitingList.getHead(); //Starts reading the head of the list (should be the highest priority)
+        //Read the list out or to check if the list is empty.
+        while (current != null) {
+            Patient patient = current.getPatient();
+            if (isCompatible(organ, patient)) {
+                return patient; // Return the first compatible patient found
+            }
+            current = current.getNext();  //Move to the next patient in the list
+        }
+        return null;  //else return no compatible patient found
     }
 
 
-    public Map<Patient, List<Double>> calculateCompatibilityScores() {
-        return patients.stream() //reorganize the patient list
-                .collect(Collectors.toMap( //Return all stream results to Map.
-                        patient -> patient,  //The Key is the Patient,
-                         patient -> organs.stream()
-                                .map(organ -> calculateCompatibilityScore(organ, patient)) //The organs are compared to our patient values
-                                .collect(Collectors.toList())
-                ));
-    }
 
-    double calculateCompatibilityScore(Organ organ, Patient patient) {
-        double bloodTypeScore = calculateBloodTypeCompatibility(organ.getBloodType(), patient.getBloodType());
-        double weightScore = calculateWeightCompatibility(organ.getWeight(), patient.getWeight());
-        double hlaScore = calculateHlaCompatibility(organ.getHlaType(), patient.getHlaType());
-        return (bloodTypeScore * 0.4) + (weightScore * 0.3) + (hlaScore * 0.3);
+    private boolean isCompatible(Organ organ, Patient patient) {
+        int bloodTypeScore = calculateBloodTypeCompatibility(organ.getBloodType(), patient.getBloodType());
+        int weightScore = calculateWeightCompatibility(organ.getWeight(), patient.getWeight());
+        int hlaScore = calculateHlaCompatibility(organ.getHlaType(), patient.getHlaType());
+        return bloodTypeScore > 0 && weightScore > 0 && hlaScore > 0;
     }
 
 
-    private int calculateBloodTypeCompatibility(String donorType, String recipientType)
-    {
-        if (donorType.equals(recipientType))
-        {
+
+    //Week 7 (Don't Remove)
+    private int calculateBloodTypeCompatibility(String donorType, String recipientType) {
+        if (donorType.equals(recipientType)) {
             return 1; // Perfect match
         }
         // Universal donor
-        else if (donorType.equals("O"))
-        {
+        else if (donorType.equals("O")) {
             return 1; // O type can donate to any type
         }
         // AB can receive from any type
-        else if (recipientType.equals("AB"))
-        {
+        else if (recipientType.equals("AB")) {
             return 1; // AB can receive from any type
         }
         return 0; // Not compatible
@@ -107,14 +84,6 @@ public class OrganCompatiabilityAnalyzer {
         } else {
             return 0; // No match
         }
-    }
-
-    private boolean isCompatible(Organ organ, Patient patient) {
-        int bloodScore = calculateBloodTypeCompatibility(organ.getBloodType(), patient.getBloodType());
-        int weightScore = calculateWeightCompatibility(organ.getWeight(), patient.getWeight());
-        int hlaScore = calculateHlaCompatibility(organ.getHlaType(), patient.getHlaType());
-
-        return bloodScore > 0 && weightScore > 0 && hlaScore > 0;
     }
 }
 

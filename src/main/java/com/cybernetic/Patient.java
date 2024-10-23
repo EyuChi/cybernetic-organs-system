@@ -1,8 +1,10 @@
 package com.cybernetic;
 
 import lombok.Data;
+import lombok.Getter;
 
 @Data
+@Getter
 public class Patient {
     private String id;
     private String name;
