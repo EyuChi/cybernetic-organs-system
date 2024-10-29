@@ -1,4 +1,4 @@
-package com.cybernetic;
+/*package com.cybernetic;
 
 import lombok.Getter;
 
@@ -63,11 +63,11 @@ private Patient findPatientById(String patientId) {
         current = current.getNext();
     }
     return null; //If Given patient id doesn't exist
-}
+}*/
 
     /*Straight from the takehome quiz, 'nearly'. Basically traverses across the linked list and prints out all info, then uses .next to traverse
     (Requirement 2.4)*/
-public void displayWaitingList() {
+/*public void displayWaitingList() {
     waitingListNode current = head;
 
     while (current != null) {
@@ -90,7 +90,7 @@ public void displayWaitingList() {
     return -1;
     }
 
-//(Requirement 2.6) REmove patients
+//(Requirement 2.6) Remove patients
     public void removePatient(String patientId) {
     if (head == null) return; // Handle empty list
 
@@ -111,4 +111,4 @@ public void displayWaitingList() {
     }
 }
 
-}
+}*/

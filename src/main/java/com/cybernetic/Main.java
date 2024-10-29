@@ -2,8 +2,6 @@ package com.cybernetic;
 
 public class Main {
     public static void main(String[] args) {
-        // Create a waiting list
-        WaitingList waitingList = new WaitingList();
 
         // Create some patients
         Patient johnDoe = new Patient("P001", "John Doe", "A+", 70, "HLA-A");
@@ -11,62 +9,44 @@ public class Main {
         Patient bobJohnson = new Patient("P003", "Bob Johnson", "O+", 80, "HLA-A");
         Patient aliceBrown = new Patient("P004", "Alice Brown", "AB-", 55, "HLA-C");
 
+        // Create patient waiting list
+        PatientWaitingList waitingList = new PatientWaitingList();
+
+
         // Add patients to the waiting list
-        System.out.println("Adding patients to the waiting list...");
-        waitingList.addPatient(johnDoe, 5);
-        waitingList.addPatient(janeSmith, 3);
-        waitingList.addPatient(bobJohnson, 4);
+        waitingList.addPatient(aliceBrown);
+        waitingList.addPatient(bobJohnson);
+        waitingList.addPatient(janeSmith);
+        waitingList.addPatient(johnDoe);
 
-        // Display initial waiting list
-        System.out.println("\nInitial Waiting List:");
-        waitingList.displayWaitingList();
+        // Print waiting list
+        waitingList.printWaitingList();
 
-        // Add a new patient
-        System.out.println("\nAdding new patient: Alice Brown (Priority: 6)");
-        waitingList.addPatient(aliceBrown, 6);
-
-        // Display updated waiting list
-        System.out.println("Updated Waiting List:");
-        waitingList.displayWaitingList();
-
-        // Remove highest priority patient
-        Patient removedPatient = waitingList.removeHighestPriority();
-        System.out.println("\nRemoving highest priority patient: " + removedPatient.getName());
-
-        // Update priority for a patient
-        System.out.println("\nUpdating priority for Bob Johnson to 7");
-        waitingList.updatePriority("P003", 7);
-
-        // Display updated waiting list
-        System.out.println("Updated Waiting List:");
-        waitingList.displayWaitingList();
-
-        /*Create an organ (Im gonna assume that there might have been a typo when it came to the weight.
-            (Changed the weight from 350 to 70) */
-        Organ cyberHeart = new Organ("O001", "CyberHeart-X1", "A+", 70, "HLA-A");
-
-        // Create an OrganCompatibilityAnalyzer
-        OrganCompatiabilityAnalyzer analyzer = new OrganCompatiabilityAnalyzer();
-
-        // Match organ to waiting list
-        System.out.println("\nMatching "+cyberHeart.getName()+" to Waiting List:");
-        Patient matchedPatient = analyzer.findCompatiblePatient(cyberHeart, waitingList);
-        if (matchedPatient != null) {
-            int priority = waitingList.getPosition(matchedPatient.getId());
-            System.out.println("Compatible patient found: " + matchedPatient.getName() +
-                    " (Priority: " + priority + ")");
-            //Orignally where line 67-68 was.
-        //after matchingPatient is found, remove the patient from the waiting list
-        System.out.println("\nRemoving matched patient from the waiting list...");
-        waitingList.removePatient(matchedPatient.getId());
-        System.out.println("Updated Waiting List:");
-        waitingList.displayWaitingList();
-        /*Had to use GPT, to figure out why it wasn't functioning correctly but when I forked
-        the main directly it would give me an error and thus the giant block of cap text in previous push.
-        By moving this statement below, it wouldn't cause a NullPointException
-         */
-        } else {
-            System.out.println("No compatible patient found in the waiting list.");
+        // Add medical events to the patients
+        String[] events = {"Annual checkup","Flu vaccination","Broken arm surgery"};
+        System.out.println("\nAdding medical event to Alice's history: ");
+        for (String event : events) {
+            System.out.println("- " + event);
+            aliceBrown.addMedicalEvent(event);
         }
+
+        // View and remove the latest medical event from Alice's history
+        System.out.println("\nViewing Alice's latest medical event: " + aliceBrown.getHistory().viewLatestEvent());
+        System.out.println("Removing Alice's latest medical event: " + aliceBrown.removeMostRecentEvent());
+
+        /*Create an organ  */
+        Organ cyberHeart = new Organ("O001", "CyberHeart-X1", "A+", 350, "HLA-A");
+
+        Patient nextPatient = waitingList.removeNextPatient();
+        System.out.println("\nProcessing the next patient for CyberHeart-X1 transplant:");
+        System.out.println("Matched CyberHeart-X1 to " + nextPatient.getName());
+        System.out.println("\nChecking " + nextPatient.getName() + "'s medical history for compatibility:");
+        while (!nextPatient.getHistory().isEmpty()) {
+            System.out.println("- " + nextPatient.getHistory().removeMostRecentEvent());
+        }
+
+        System.out.println("\n" + nextPatient.getName() + " is compatible with "+cyberHeart.getName()+"!\n");
+
+        waitingList.printWaitingList();
     }
 }

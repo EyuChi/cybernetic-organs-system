@@ -1,4 +1,4 @@
-package com.cybernetic;
+/*package com.cybernetic;
 
 public class OrganCompatiabilityAnalyzer {
 
@@ -93,5 +93,5 @@ public class OrganCompatiabilityAnalyzer {
             return 0; // No match
         }
     }
-}
+}*/
 

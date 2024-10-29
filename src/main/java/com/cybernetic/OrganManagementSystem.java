@@ -1,4 +1,4 @@
-package com.cybernetic;
+/*package com.cybernetic;
 
 import lombok.Getter;
 
@@ -55,7 +55,7 @@ public class OrganManagementSystem {
         return (bloodScore * 0.4) + (weightScore * 0.3) + (hlaScore * 0.3);
     }
 }
-
+*/
 
 
 
