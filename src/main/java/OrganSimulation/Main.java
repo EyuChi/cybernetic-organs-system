@@ -22,7 +22,7 @@ public class Main {
 
     //Starts all the Organ classes to do their thing
     public void start(Heart heart, Lung lung, Brain brain) {
-        //Recursion via while loop until tiemstep reaches a 100, the rest of the conditions break the loop
+        //Recursion via while loop until timestep reaches a 100, the rest of the conditions break the loop
         while (timeStep < 100 && heart.getHealth() > 0 && heart.getPumpRate() > 40 && lung.getLHealth() > 0 && lung.getOxygen() > 70 && brain.getBHealth() > 0 && brain.getConEff() > 50) {
             // 1.Print out the current stats of each organ per timestep
             System.out.println("\nTime Step: " + timeStep);

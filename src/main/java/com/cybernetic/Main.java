@@ -1,72 +1,171 @@
 package com.cybernetic;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.time.LocalDate;
+import java.util.ArrayList;
+
 public class Main {
     public static void main(String[] args) {
-        // Create a waiting list
-        WaitingList waitingList = new WaitingList();
+        OrganInventory inventory = new OrganInventory();
+        ArrayList<String> validationErrors = new ArrayList<>();
+        ArrayList<Patient> validPatients = new ArrayList<>();
 
-        // Create some patients
-        Patient johnDoe = new Patient("P001", "John Doe", "A+", 70, "HLA-A");
-        Patient janeSmith = new Patient("P002", "Jane Smith", "B-", 65, "HLA-B");
-        Patient bobJohnson = new Patient("P003", "Bob Johnson", "O+", 80, "HLA-A");
-        Patient aliceBrown = new Patient("P004", "Alice Brown", "AB-", 55, "HLA-C");
+        System.out.println("Part 1 - CyberOrgan Hub Demonstration");
+        System.out.println("=====================================\n");
 
-        // Add patients to the waiting list
-        System.out.println("Adding patients to the waiting list...");
-        waitingList.addPatient(johnDoe, 5);
-        waitingList.addPatient(janeSmith, 3);
-        waitingList.addPatient(bobJohnson, 4);
+        // 1. Load and validate organs
+        System.out.println("1. Loading and Validating Organs...");
+        System.out.println("----------------------------------");
+        loadOrgans(inventory, validationErrors);
 
-        // Display initial waiting list
-        System.out.println("\nInitial Waiting List:");
-        waitingList.displayWaitingList();
+        // Print organ validation errors
+        System.out.println("\nOrgan Validation Errors:");
+        System.out.println("------------------------");
+        for (int i = 0; i < Math.min(5, validationErrors.size()); i++) {
+            System.out.println(validationErrors.get(i));
+        }
 
-        // Add a new patient
-        System.out.println("\nAdding new patient: Alice Brown (Priority: 6)");
-        waitingList.addPatient(aliceBrown, 6);
+        if (validationErrors.size() > 5) {
+            System.out.printf("[...%d more validation errors...]\n",
+                    validationErrors.size() - 5);
+        }
 
-        // Display updated waiting list
-        System.out.println("Updated Waiting List:");
-        waitingList.displayWaitingList();
+        // 2. Demonstrate sorting
+        System.out.println("\n2. Demonstrating Organ Sorting...");
+        System.out.println("--------------------------------");
 
-        // Remove highest priority patient
-        Patient removedPatient = waitingList.removeHighestPriority();
-        System.out.println("\nRemoving highest priority patient: " + removedPatient.getName());
+        // Power Level sorting
+        System.out.println("\nSorted by Power Level (Quicksort):");
+        ArrayList<CyberneticOrgan> powerSorted = inventory.sortByPowerLevel();
+        printTopFiveOrgans(powerSorted, organ ->
+                String.format("ID: %s, Power Level: %d (%s)",
+                        organ.getId(),
+                        organ.getPowerLevel(),
+                        organ.getType()));
 
-        // Update priority for a patient
-        System.out.println("\nUpdating priority for Bob Johnson to 7");
-        waitingList.updatePriority("P003", 7);
+        // Manufacture Date sorting
+        System.out.println("\nSorted by Manufacture Date (Mergesort):");
+        ArrayList<CyberneticOrgan> dateSorted = inventory.sortByManufactureDate();
+        printTopFiveOrgans(dateSorted, organ ->
+                String.format("ID: %s, Date: %s (%s)",
+                        organ.getId(),
+                        organ.getManufactureDate(),
+                        organ.getType()));
 
-        // Display updated waiting list
-        System.out.println("Updated Waiting List:");
-        waitingList.displayWaitingList();
+        // Compatibility Score sorting
+        System.out.println("\nSorted by Compatibility Score (Bubblesort):");
+        ArrayList<CyberneticOrgan> compatibilitySorted = inventory.sortByCompatibilityScore();
+        printTopFiveOrgans(compatibilitySorted, organ ->
+                String.format("ID: %s, Compatibility: %.2f (%s)",
+                        organ.getId(),
+                        organ.getCompatibilityScore(),
+                        organ.getType()));
 
-        /*Create an organ (Im gonna assume that there might have been a typo when it came to the weight.
-            (Changed the weight from 350 to 70) */
-        Organ cyberHeart = new Organ("O001", "CyberHeart-X1", "A+", 70, "HLA-A");
+        // 3. Load and validate patients
+        validationErrors.clear();
+        System.out.println("\n3. Loading and Validating Patients...");
+        System.out.println("------------------------------------");
+        loadPatients(validPatients, validationErrors);
 
-        // Create an OrganCompatibilityAnalyzer
-        OrganCompatiabilityAnalyzer analyzer = new OrganCompatiabilityAnalyzer();
+        // Print patient validation errors
+        System.out.println("\nPatient Validation Errors:");
+        System.out.println("-------------------------");
+        for (int i = 0; i < Math.min(5, validationErrors.size()); i++) {
+            System.out.println(validationErrors.get(i));
+        }
+        if (validationErrors.size() > 5) {
+            System.out.printf("[...%d more validation errors...]\n",
+                    validationErrors.size() - 5);
+        }
+    }
 
-        // Match organ to waiting list
-        System.out.println("\nMatching "+cyberHeart.getName()+" to Waiting List:");
-        Patient matchedPatient = analyzer.findCompatiblePatient(cyberHeart, waitingList);
-        if (matchedPatient != null) {
-            int priority = waitingList.getPosition(matchedPatient.getId());
-            System.out.println("Compatible patient found: " + matchedPatient.getName() +
-                    " (Priority: " + priority + ")");
-            //Orignally where line 67-68 was.
-        //after matchingPatient is found, remove the patient from the waiting list
-        System.out.println("\nRemoving matched patient from the waiting list...");
-        waitingList.removePatient(matchedPatient.getId());
-        System.out.println("Updated Waiting List:");
-        waitingList.displayWaitingList();
-        /*Had to use GPT, to figure out why it wasn't functioning correctly but when I forked
-        the main directly it would give me an error and thus the giant block of cap text in previous push.
-        By moving this statement below, it wouldn't cause a NullPointException
-         */
-        } else {
-            System.out.println("No compatible patient found in the waiting list.");
+    private static void loadOrgans(OrganInventory inventory, ArrayList<String> errors) {
+        try (InputStream is = Main.class.getResourceAsStream("/organs.csv");
+             BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+
+            String line = reader.readLine(); // skip header
+            int successCount = 0;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("#")) continue;
+                String[] data = line.split(",");
+
+                try {
+                    CyberneticOrgan organ = new CyberneticOrgan(
+                            data[0].trim(),
+                            data[1].trim(),
+                            data[2].trim(),
+                            Integer.parseInt(data[3].trim()),
+                            Double.parseDouble(data[4].trim()),
+                            LocalDate.parse(data[5].trim()),
+                            data[6].trim(),
+                            data[7].trim()
+                    );
+
+                    inventory.addOrgan(organ);
+                    if (successCount < 5) {
+                        System.out.println("Successfully added: " + organ.getId());
+                    } else if (successCount == 5) {
+                        System.out.println("[...more successful additions...]");
+                    }
+                    successCount++;
+                } catch (IllegalArgumentException e) {
+                    errors.add("Error with organ " + data[0] + ": " + e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error reading organs file: " + e.getMessage());
+        }
+    }
+
+    private static void loadPatients(ArrayList<Patient> validPatients, ArrayList<String> errors) {
+        try (InputStream is = Main.class.getResourceAsStream("/patients.csv");
+             BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+
+            String line = reader.readLine(); // skip header
+            int successCount = 0;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("#")) continue;
+
+                String[] data = line.split(",");
+                try {
+                    Patient patient = new Patient(
+                            data[0].trim(),
+                            data[1].trim(),
+                            Integer.parseInt(data[2].trim()),
+                            data[3].trim(),
+                            data[4].trim(),
+                            Integer.parseInt(data[5].trim()),
+                            LocalDate.parse(data[6].trim()),
+                            data[7].trim()
+                    );
+
+                    validPatients.add(patient);
+                    if (successCount < 5) {
+                        System.out.printf("Successfully validated: %s - %s (Age: %d, Blood Type: %s, Organ Needed: %s)\n",
+                                patient.getId(), patient.getName(), patient.getAge(),
+                                patient.getBloodType(), patient.getOrganNeeded());
+                    } else if (successCount == 5) {
+                        System.out.println("[...more successful validations...]");
+                    }
+                    successCount++;
+                } catch (IllegalArgumentException e) {
+                    errors.add("Error with patient " + data[0] + ": " + e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error reading patients file: " + e.getMessage());
+        }
+    }
+
+    private static void printTopFiveOrgans(ArrayList<CyberneticOrgan> organs,
+                                           java.util.function.Function<CyberneticOrgan, String> formatter) {
+        for (int i = 0; i < Math.min(5, organs.size()); i++) {
+            System.out.println(formatter.apply(organs.get(i)));
+        }
+        if (organs.size() > 5) {
+            System.out.printf("[...%d more organs...]\n", organs.size() - 3);
         }
     }
 }
