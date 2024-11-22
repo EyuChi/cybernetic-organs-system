@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TransplantHistory {
-    private TransplantRecord head;
+
+private TransplantRecord head;
 
     public TransplantHistory() {
         this.head = null; //The plans for the tower
@@ -12,20 +13,20 @@ public class TransplantHistory {
 
     //Requirement 1.1 Add the new records to our linkedlist
     public void addTransplantRecordAtBeginning(TransplantRecord record) {
-        record.setNext(head);  //Set the new floor to the current head
-        head = record;  //Make the new floor the new head of the building
+        record.setNext(head);  // Set the new record's next to point to the current head
+        head = record;         // Update the head to the new record
     }
 
     //Requirement 1.2 Find Transplant based on patient ID
     public TransplantRecord findTransplantByPatient(String patientId) {
-        TransplantRecord current = head;  //Start from the top of the tower
+        TransplantRecord current = head; // Start at the head of the list
         while (current != null) {
-            if (current.getPatientId().equals(patientId)) {  //Check if patient ID matches
-                return current;
+            if (current.getPatientId().equals(patientId)) {
+                return current; // Found the record with the matching patientId
             }
-            current = current.getNext();  //Move to the next record in the list
+            current = current.getNext(); // Move to the next record
         }
-        return null;  //Return null if no matching transplant record is found
+        return null; // Return null if no matching record is found
     }
 
 
@@ -42,6 +43,14 @@ public class TransplantHistory {
             i++;
         }
         return recentRecords;
+    }
+
+    public void printAllTransplantRecords() {
+        TransplantRecord current = head;
+        while (current != null) {
+            System.out.println(current);
+            current = current.getNext();
+        }
     }
 
 

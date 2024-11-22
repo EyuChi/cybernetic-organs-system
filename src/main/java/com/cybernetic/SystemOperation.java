@@ -2,9 +2,6 @@ package com.cybernetic;
 
 import lombok.Getter;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 @Getter
 public class SystemOperation {
     private String operationId;
@@ -24,8 +21,15 @@ public class SystemOperation {
         return isReversible;
     }
 
-    // To display information about the operation
-
+    @Override
+    public String toString() {
+        return "SystemOperation{" +
+                "operationId='" + operationId + '\'' +
+                ", operationType='" + operationType + '\'' +
+                ", description='" + description + '\'' +
+                ", isReversible=" + isReversible +
+                '}';
+    }
 
     // Logic to reverse the operation
     public void reverse() {

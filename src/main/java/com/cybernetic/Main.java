@@ -63,7 +63,7 @@ public class Main {
         );
         System.out.println("PUSH: EMERGENCY-001 (Emergency Case)");
 
-        System.out.println("\nRecent Operations:");
+        System.out.println("\n");
         List<SystemOperation> recentOps = operationsLog.getRecentOperations(3);
         for (int i = 0; i < recentOps.size(); i++) {
             System.out.println((i + 1) + ". " + recentOps.get(i) + (i == 0 ? " (Latest)" : ""));

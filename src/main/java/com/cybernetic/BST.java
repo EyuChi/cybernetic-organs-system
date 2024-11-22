@@ -43,9 +43,10 @@ public class BST <T extends Comparable<T>> {// Node class representing each node
         return searchRec(root.right, value);
     }
 
-    private EmergencyCase searchById(String caseId) {
-        return  searchByIdRec(root, caseId)
+    public EmergencyCase searchById(String caseId) {
+        return  searchByIdRec(root, caseId);
     }
+    //Requirement 3.4
     private EmergencyCase searchByIdRec(Node<T> root, String caseId) {
         if (root == null) {
             return null;
@@ -62,6 +63,61 @@ public class BST <T extends Comparable<T>> {// Node class representing each node
         } else {
             return searchByIdRec(root.right, caseId);
         }
+    }
+
+
+    //To remove nodes, this.
+    public void remove(T value) {
+        root = removeRec(root, value);
+    }
+
+    private Node<T> removeRec(Node<T> root, T value) {
+        if (root == null) {
+            return null;
+        }
+
+        //Compare the value to find the node to remove
+        int comparison = value.compareTo(root.value);
+
+        if (comparison < 0) {
+            //Value is in the left subtree
+            root.left = removeRec(root.left, value);
+        } else if (comparison > 0) {
+            //Value is in the right subtree
+            root.right = removeRec(root.right, value);
+        } else {
+            //Found the node to remove
+
+            //case1: Node is a leaf (no children)
+            if (root.left == null && root.right == null) {
+                return null;
+            }
+
+            //case2: Node has one child
+            if (root.left == null) {
+                return root.right;
+            } else if (root.right == null) {
+                return root.left;
+            }
+
+            //case3: Node has two children
+            //find smallest value
+            T minValue = findMinValue(root.right);
+            root.value = minValue; // Replace the node's value with the successor's value
+            root.right = removeRec(root.right, minValue); // Remove the successor
+        }
+
+        return root;
+    }
+
+    //Search for min value
+    private T findMinValue(Node<T> root) {
+        T minValue = root.value;
+        while (root.left != null) {
+            root = root.left;
+            minValue = root.value;
+        }
+        return minValue;
     }
 }
 

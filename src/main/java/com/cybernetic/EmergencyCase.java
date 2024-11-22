@@ -20,6 +20,16 @@ public class EmergencyCase implements Comparable<EmergencyCase> {
     }
 
     @Override
+    public String toString() {
+        return "EmergencyCase{" +
+                "caseId='" + caseId + '\'' +
+                ", patient=" + patient +
+                ", severityLevel=" + severityLevel +
+                ", registrationTime=" + registrationTime +
+                '}';
+    }
+
+    @Override
     public int compareTo(EmergencyCase other) {
         if (this.severityLevel != other.severityLevel) {
             return Integer.compare(other.severityLevel, this.severityLevel);
