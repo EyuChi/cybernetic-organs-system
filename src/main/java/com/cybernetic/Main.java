@@ -1,75 +1,73 @@
 package com.cybernetic;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
 
 public class Main {
-
-    //Random example To CyberneticOrgan
     public static void main(String[] args) {
-        System.out.println("Hello, I'm Batman!");
+        // Create an instance of OrganInventory and add organs
+        System.out.println("Adding organs to inventory...");
 
-        Patient johnD = new Patient("John Doe", 30, "No known allergies");
-
-        // Create sample organs
-        CyberneticOrgan organ1 = new CyberneticOrgan("ORG001", "CyberHeartX1", "Pumps blood", "Type O");
-        CyberneticOrgan organ2 = new CyberneticOrgan("ORG002", "CyberEyeV2", "Enhanced vision", "Type A");
-        CyberneticOrgan organ3 = new CyberneticOrgan("ORG003", "CyberLungZ3", "Filters air", "Type B");
-        CyberneticOrgan organ4 = new CyberneticOrgan("ORG004", "CyberLiverA5", "Detoxifies blood", "Type O");
-        CyberneticOrgan organ5 = new CyberneticOrgan("ORG005", "CyberKidneyX4", "Regulates electrolytes", "Type AB");
-        CyberneticOrgan organ6 = new CyberneticOrgan("ORG006", "CyberArmG7", "Enhanced strength", "Universal");
-
-        //Start the list of the organs
+        // build the organ inventory from buildOrganInventory method then add the organs to the inventory
+        List<Organ> organs = buildOrganInventory();
         OrganInventory inventory = new OrganInventory();
-
-        inventory.addOrgan(organ1);
-        inventory.addOrgan(organ2);
-        inventory.addOrgan(organ3);
-        inventory.addOrgan(organ4);
-        inventory.addOrgan(organ5);
-        inventory.addOrgan(organ6);
-        System.out.println(" \nEnd of Adding Organs \n ");
-
-        // Add organs to the patient
-        johnD.addOrgan(organ1);
-        johnD.addOrgan(organ2);
-        johnD.addOrgan(organ3);
-        johnD.addOrgan(organ4);
-        johnD.addOrgan(organ5);
-       /*
-       patient.addOrgan(organ6);// This should print "Too many organs installed! Cannot add more!"
-        */
-
-        System.out.println("\n End of Installing Organs \n");
-
-        // Display patient info and organ list
-        System.out.println(johnD.getPatientInfo());
-        johnD.getOrganList();
-
-        System.out.println("\n End of Patient Info \n");
-
-        //Search For Organs with Functionality: Enhanced Vision
-        ArrayList<CyberneticOrgan> foundOrgans = inventory.searchOrgan("Enhanced Vision");
-        if (foundOrgans.isEmpty()) {
-            System.out.println("No organs found with the specified functionality.");
-        } else {
-            for (CyberneticOrgan find : foundOrgans) {
-                System.out.println(find.getDetails());
-            }
+        for (Organ organ : organs) {
+            inventory.addOrgan(organ);
         }
-            System.out.println("\nEnd of Search \n ");
+
+        System.out.println("Sorting inventory by name, model, and compatibility...Using Collection.sort");
+        long startTime = System.nanoTime();
+        List<Organ> sortedOrgans = inventory.sortOrganByNameModelAndCompatibilityUsingBuiltInSort();
+        System.out.println("Time taken to sort using collection.sort: " + (System.nanoTime() - startTime) + "ns");
+
+        System.out.println("Sorting inventory by name, model, and compatibility...Using QuickSort");
+        startTime = System.nanoTime();
+        sortedOrgans = inventory.quickSortOrganByNameModelAndCompatibility(inventory.getInventory());
+        System.out.println("Time taken to sort using quicksort: " + (System.nanoTime() - startTime) + "ns");
+        //Then write the sorted inventory to the new csv file.
+        writeOrganInventory(sortedOrgans);
+
+        System.out.println("Sorted inventory written to file.");
 
 
-        //Sort OrganInventory by Model alphabetically
-        inventory.sortOrgan();
-        /*New term .unmodifiableList:
-        Make it so the data cannot be access outside the OrganInventory Class
-        To provide read-only access.
-         */
-        for (CyberneticOrgan organ : Collections.unmodifiableList(inventory.getOrganList()) )
-            System.out.println(organ.getDetails());
+    }
 
-        System.out.println("\nEnd of Sort \n ");
+    private static void writeOrganInventory(List<Organ> sortedOrgans) {
+        //write the sorted inventory to a new csv file
+        String csvFile = "src/main/java/Resources/sorted-organ-list.csv";
+        try (PrintWriter writer = new PrintWriter(csvFile)) {
+            writer.write("Model,Name,Functionality,Compatibility\n");
+            for (Organ organ : sortedOrgans) {
+                //write in this order name,model,functionality,compatibility
+                writer.write(organ.getName() + "," + organ.getModel() + "," + organ.getFunctionality() + "," + organ.getCompatibility() + "\n");
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
+    private static List<Organ> buildOrganInventory() {
+        //read the csv file
+        String csvFile = "src/main/java/Resources/sample-organ-list.csv";
+        String line;
+        String cvsSplitBy = ",";
+        List<Organ> inventory = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+            br.readLine(); // skip the header
+            while ((line = br.readLine()) != null) {
+                // use comma as separator
+                String[] organ= line.split(cvsSplitBy);
+                Organ newOrgan = new Organ( organ[1].trim(),organ[0].trim(), organ[2].trim(),organ[3].trim());
+                inventory.add(newOrgan);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return inventory;
     }
 }
